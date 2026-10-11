@@ -30,6 +30,8 @@
 
     body {
       min-height: 100vh;
+      /* Visible height with the phone browser's toolbars showing, so the form is in frame on landing */
+      min-height: 100svh;
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
       color: #2c2519;
       display: flex;
@@ -72,7 +74,7 @@
       position: relative;
       width: 100%;
       max-width: 420px;
-      padding: 0 16px 32px;
+      padding: 0 16px calc(24px + env(safe-area-inset-bottom));
       box-sizing: border-box;
       text-align: center;
     }
