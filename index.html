@@ -40,9 +40,16 @@
       overflow: hidden;
       z-index: -1;
       pointer-events: none;
-      /* Wall lighting sampled from the original artwork */
-      background: linear-gradient(#c6ba9d 0%, #c5b99c 20%, #c1b69a 30%, #bcb297 40%, #b6ad93 50%, #aea48b 60%, #a59c84 70%, #9c937e 80%, #918976 90%, #8d8572 100%) #c8b99a;
+      /* Wall colours. "sunset" is in use; "stone" is the lighting sampled from the original artwork.
+         Swap the var() below to change it, or preview with ?wall=stone / ?wall=sunset.
+         Sunset's first colour is 65% opaque, so it sits over white, as it would in a design tool. */
+      --wall-sunset: linear-gradient(311deg, #fff58da6, #f3c17f) #fff;
+      --wall-stone: linear-gradient(#c6ba9d 0%, #c5b99c 20%, #c1b69a 30%, #bcb297 40%, #b6ad93 50%, #aea48b 60%, #a59c84 70%, #9c937e 80%, #918976 90%, #8d8572 100%) #c8b99a;
+      background: var(--wall-sunset);
     }
+
+    :root[data-wall="stone"] .stage { background: var(--wall-stone); }
+    :root[data-wall="sunset"] .stage { background: var(--wall-sunset); }
 
     /* Arm and logo share the artboard (846.14 × 1136.98). Full screen height; on narrow screens
        capped at 1.5× the width so only empty wall is cropped and the arm stays fully in view.
@@ -244,6 +251,10 @@
   </div>
 
   <script>
+    // ?wall=stone or ?wall=sunset previews either wall gradient
+    const wall = new URLSearchParams(location.search).get('wall');
+    if (wall) document.documentElement.dataset.wall = wall;
+
     // Sway: the arm leans towards the cursor on desktop. On touch screens it sways gently on its
     // own, leans towards a finger while touching, and follows the phone's tilt where the browser
     // allows it without a permission prompt (Android). iPhones require a prompt, so they get the
