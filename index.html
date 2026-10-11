@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DatSlaps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap" rel="stylesheet">
   <meta property="og:image" content="https://www.datslaps.co.uk/assets/bg.jpg">
   <style>
     html, body {
@@ -40,14 +43,17 @@
       overflow: hidden;
       z-index: -1;
       pointer-events: none;
-      /* Wall colours. "sunset" is in use; "stone" is the lighting sampled from the original artwork.
-         Swap the var() below to change it, or preview with ?wall=stone / ?wall=sunset.
+      /* Wall colours. "chalk" (from the mockup) is in use; "sunset" is the orange/yellow gradient;
+         "stone" is the lighting sampled from the original artwork. Swap the var() below to change
+         it, or preview with ?wall=chalk / ?wall=sunset / ?wall=stone.
          Sunset's first colour is 65% opaque, so it sits over white, as it would in a design tool. */
+      --wall-chalk: linear-gradient(#edebe8 0%, #ebebe8 50%, #e9e9de 73%, #e6e1d2 94%, #e4ddcf 100%) #ebebe8;
       --wall-sunset: linear-gradient(311deg, #fff58da6, #f3c17f) #fff;
       --wall-stone: linear-gradient(#c6ba9d 0%, #c5b99c 20%, #c1b69a 30%, #bcb297 40%, #b6ad93 50%, #aea48b 60%, #a59c84 70%, #9c937e 80%, #918976 90%, #8d8572 100%) #c8b99a;
-      background: var(--wall-sunset);
+      background: var(--wall-chalk);
     }
 
+    :root[data-wall="chalk"] .stage { background: var(--wall-chalk); }
     :root[data-wall="stone"] .stage { background: var(--wall-stone); }
     :root[data-wall="sunset"] .stage { background: var(--wall-sunset); }
 
@@ -68,13 +74,33 @@
       overflow: visible;
     }
 
-    /* Multiply with a cool grey reproduces the artwork's shadow tones over the whole gradient */
+    /* Multiply with a cool grey, faded to 47%, gives the mockup's soft grey shadow (~#9b9e9a),
+       picking up the wall's warmth where it changes. Only the arm is faded, not the logo. */
     .arm {
       fill: #414c4f;
       mix-blend-mode: multiply;
+      opacity: 0.47;
     }
 
     .logo { fill: #fff; }
+
+    .headline {
+      position: fixed;
+      top: calc(40px + env(safe-area-inset-top));
+      left: 0;
+      right: 0;
+      margin: 0;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 800;
+      /* Sized from the screen height, like the arm, so the two stay in proportion */
+      font-size: clamp(2.5rem, min(8svh, 13vw), 6rem);
+      line-height: 0.88;
+      letter-spacing: -0.045em;
+      text-align: center;
+      text-transform: uppercase;
+      color: #fff;
+      pointer-events: none;
+    }
 
     .grain {
       position: absolute;
@@ -174,15 +200,23 @@
       fill: currentColor;
     }
 
-    /* Landscape phones: too short to show the whole arm with the form over it, so enlarge the
-       arm and crop its lower part. The can sits ~21.5% down the artboard; at 170% of the screen
-       height and shifted up 30.5%, the top of the can lands 6% from the top of the screen */
+    /* Landscape phones: too short to show the whole arm with the heading and form, so enlarge the
+       arm and crop its lower part, and put the heading on one line. The can sits ~21.5% down the
+       artboard; at 150% of the screen height and shifted up 10.25%, the top of the can lands 22%
+       from the top of the screen, below the heading, with the logo clear of the form */
     @media (orientation: landscape) and (max-height: 540px) {
       .layer {
-        top: -30.5%;
+        top: -10.25%;
         bottom: auto;
-        height: 170%;
+        height: 150%;
       }
+
+      .headline {
+        top: calc(12px + env(safe-area-inset-top));
+        font-size: clamp(1.5rem, 9svh, 2.5rem);
+      }
+
+      .headline br { display: none; }
 
       .bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
       .socials { margin-top: 6px; }
@@ -231,6 +265,7 @@
     </svg>
     <div class="grain"></div>
   </div>
+  <h1 class="headline">Coming <br>soon</h1>
   <div class="bar">
     <form class="signup" id="signup">
       <label for="email" class="visually-hidden">Email address</label>
