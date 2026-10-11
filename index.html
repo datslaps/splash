@@ -152,23 +152,23 @@
       fill: currentColor;
     }
 
-    /* Landscape phones: arm on the left, form on the right, so the form doesn't cover the arm */
+    /* Landscape phones: the screen is too short to show the whole arm with the form over it,
+       so enlarge the image and crop the lower arm instead. The can sits ~21.5% down the image;
+       at 170% of the screen height and shifted up 30.5%, the can's top lands 6% from the top */
     @media (orientation: landscape) and (max-height: 540px) {
-      body {
-        justify-content: center;
-        align-items: flex-end;
+      .stage {
+        background-size: 100% 170%, auto;
+        background-position: center 43.6%, center;
       }
 
-      .art { left: 30%; }
-
-      .bar {
-        width: 50%;
-        max-width: 380px;
-        margin-right: max(16px, calc(25vw - 190px));
-        padding-bottom: 0;
+      .art {
+        top: -30.5%;
+        bottom: auto;
+        height: 170%;
       }
 
-      .age, .status, .socials a { color: #2c2519; }
+      .bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+      .socials { margin-top: 6px; }
     }
 
     .visually-hidden {
@@ -304,6 +304,8 @@
       source.addEventListener('load', paint);
       art.addEventListener('load', sync);
       new ResizeObserver(schedule).observe(stage);
+      addEventListener('resize', schedule);
+      addEventListener('orientationchange', () => setTimeout(schedule, 300));
       if (art.complete) sync();
     })();
 
