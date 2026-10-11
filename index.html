@@ -35,7 +35,6 @@
        recalculate unreliably when rotating. */
     .stage {
       --art-h: min(100%, 201.84vw);
-      --sway: 0deg;
       position: fixed;
       inset: 0;
       overflow: hidden;
@@ -55,6 +54,7 @@
       height: var(--art-h);
       width: auto;
       aspect-ratio: 846.14 / 1136.98;
+      --sway: 0deg;
       transform: translateX(-50%) rotate(var(--sway));
       transform-origin: 50.4% 130%;
       will-change: transform;
@@ -243,9 +243,11 @@
     // Sway: the arm leans towards the cursor on desktop. On touch screens it sways gently on its
     // own, leans towards a finger while touching, and follows the phone's tilt where the browser
     // allows it without a permission prompt (Android). iPhones require a prompt, so they get the
-    // idle and touch sway only. Disabled when the device asks for reduced motion.
+    // idle and touch sway only. Stops when the device asks for reduced motion, and is off entirely
+    // with ?still in the URL (handy for editing styles in DevTools).
     (() => {
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (new URLSearchParams(location.search).has('still')) return;
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
       const MAX = 4;          // degrees either way
       const TILT_RANGE = 25;  // degrees of phone tilt for full sway
@@ -253,12 +255,14 @@
       const IDLE_PERIOD = 6;  // seconds per sway cycle
       const IDLE_AFTER = 2000; // ms without input before idle sway resumes
 
-      const stage = document.querySelector('.stage');
+      // Only the moving layers get the angle, so nothing else restyles every frame
+      const layers = document.querySelectorAll('.layer');
       const clamp = (v) => Math.max(-1, Math.min(1, v));
 
       let input = null;       // -1…1 from cursor, finger or tilt; null when idle
       let lastInput = -Infinity;
       let angle = 0;
+      let written = 0;
       let last = performance.now();
 
       function setInput(value) {
@@ -287,9 +291,22 @@
         });
       }
 
+      function write(value) {
+        if (Math.abs(value - written) < 0.005) return;
+        written = value;
+        layers.forEach((layer) => layer.style.setProperty('--sway', value.toFixed(3) + 'deg'));
+      }
+
       function frame(now) {
         const dt = Math.min(0.1, (now - last) / 1000);
         last = now;
+
+        if (reduceMotion.matches) {
+          angle = 0;
+          write(0);
+          requestAnimationFrame(frame);
+          return;
+        }
 
         let target;
         if (input !== null && now - lastInput < IDLE_AFTER) {
@@ -302,7 +319,7 @@
 
         // Ease towards the target with a slight lag, which reads as weight
         angle += (target - angle) * (1 - Math.exp(-dt * 4));
-        stage.style.setProperty('--sway', angle.toFixed(3) + 'deg');
+        write(angle);
         requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
