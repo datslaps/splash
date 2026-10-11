@@ -38,6 +38,16 @@
       align-items: center;
     }
 
+    /* Wall drawn by script: the gradient above plus grain copied from the image */
+    .wall {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
     .art {
       position: fixed;
       bottom: 0;
@@ -149,6 +159,7 @@
   </style>
 </head>
 <body>
+  <canvas class="wall" aria-hidden="true"></canvas>
   <img class="art" src="assets/bg.jpg" srcset="assets/bg.jpg 1600w, assets/bg-2400.jpg 2400w" sizes="min(74.3vh, 150vw)" alt="" aria-hidden="true">
   <div class="bar">
     <form class="signup" id="signup">
@@ -170,6 +181,103 @@
   </div>
 
   <script>
+    // Paint the wall outside the image: the same gradient as the CSS fallback, with grain
+    // copied from a plain patch of the image at its displayed size, so texture matches.
+    (() => {
+      const STOPS = [
+        [0, '#c6ba9d'], [0.2, '#c5b99c'], [0.3, '#c1b69a'], [0.4, '#bcb297'], [0.5, '#b6ad93'],
+        [0.6, '#aea48b'], [0.7, '#a59c84'], [0.8, '#9c937e'], [0.9, '#918976'], [1, '#8d8572']
+      ];
+      // Plain wall above and right of the can, as fractions of the image (clear of the arm)
+      const PATCH = { x: 0.64, y: 0.03, w: 0.32, h: 0.28 };
+
+      const art = document.querySelector('.art');
+      const canvas = document.querySelector('.wall');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      // A plain copy of whichever file the <img> picked, so sizes are real pixels
+      // (with srcset, the <img> reports its size in display units instead)
+      const source = new Image();
+      source.decoding = 'async';
+
+      function grainTile(scale) {
+        const sw = source.naturalWidth * PATCH.w;
+        const sh = source.naturalHeight * PATCH.h;
+        const tw = Math.max(96, Math.round(sw * scale));
+        const th = Math.max(96, Math.round(sh * scale));
+
+        // Shrink in halving steps, like the browser's own smoothing when it displays the image;
+        // a single big downscale keeps too much grain and looks harsher than the image
+        let src = source, sx = source.naturalWidth * PATCH.x, sy = source.naturalHeight * PATCH.y, cw = sw, ch = sh;
+        while (cw / 2 > tw) {
+          const step = new OffscreenCanvas(Math.round(cw / 2), Math.round(ch / 2)).getContext('2d');
+          step.imageSmoothingQuality = 'high';
+          step.drawImage(src, sx, sy, cw, ch, 0, 0, step.canvas.width, step.canvas.height);
+          src = step.canvas; sx = 0; sy = 0; cw = step.canvas.width; ch = step.canvas.height;
+        }
+        const sharp = new OffscreenCanvas(tw, th).getContext('2d', { willReadFrequently: true });
+        sharp.imageSmoothingQuality = 'high';
+        sharp.drawImage(src, sx, sy, cw, ch, 0, 0, tw, th);
+
+        // Blurred copy = the patch's lighting; sharp minus blurred = just the grain
+        const soft = new OffscreenCanvas(tw, th).getContext('2d', { willReadFrequently: true });
+        soft.filter = 'blur(6px)';
+        soft.drawImage(sharp.canvas, 0, 0);
+
+        // Drop the edges, where the blur fades to transparent and would show seams between tiles
+        const m = 24;
+        const iw = tw - m * 2;
+        const ih = th - m * 2;
+        const a = sharp.getImageData(m, m, iw, ih).data;
+        const b = soft.getImageData(m, m, iw, ih).data;
+        const delta = new Int16Array(a.length);
+        for (let i = 0; i < a.length; i++) delta[i] = a[i] - b[i];
+        return { delta, tw: iw, th: ih };
+      }
+
+      function paint() {
+        if (!source.complete || !source.naturalWidth) return;
+        const dpr = window.devicePixelRatio || 1;
+        const w = Math.round(innerWidth * dpr);
+        const h = Math.round(innerHeight * dpr);
+        canvas.width = w;
+        canvas.height = h;
+
+        const rect = art.getBoundingClientRect();
+        const gradient = ctx.createLinearGradient(0, rect.top * dpr, 0, rect.bottom * dpr);
+        STOPS.forEach(([at, colour]) => gradient.addColorStop(at, colour));
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, h);
+
+        const { delta, tw, th } = grainTile((rect.height * dpr) / source.naturalHeight);
+        const img = ctx.getImageData(0, 0, w, h);
+        const px = img.data;
+        for (let y = 0; y < h; y++) {
+          const row = (y % th) * tw;
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            const j = (row + (x % tw)) * 4;
+            px[i] += delta[j];
+            px[i + 1] += delta[j + 1];
+            px[i + 2] += delta[j + 2];
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+
+      function sync() {
+        if (!art.currentSrc) return;
+        if (source.src !== art.currentSrc) source.src = art.currentSrc;
+        else paint();
+      }
+
+      let timer;
+      source.addEventListener('load', paint);
+      art.addEventListener('load', sync);
+      addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(sync, 150); });
+      if (art.complete) sync();
+    })();
+
     // Klaviyo public key and list ID are safe to publish: they only allow subscribing.
     const KLAVIYO_PUBLIC_KEY = 'XFG94h';
     const KLAVIYO_LIST_ID = 'YeFbmS';
