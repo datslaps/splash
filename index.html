@@ -5,15 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DatSlaps</title>
   <style>
-    :root {
-      /* Image height: full viewport height. On narrow screens it is capped at 1.5× the width (image ratio 1600×2153), so only plain wall is cropped from the sides and the arm stays fully in view */
-      --art-h: min(100vh, 201.84vw);
-    }
-
-    @supports (height: 100dvh) {
-      :root { --art-h: min(100dvh, 201.84vw); }
-    }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -21,11 +12,7 @@
     }
 
     html {
-      /* Wall gradient sampled from the image's edges, so the space beside the image blends in */
-      background:
-        linear-gradient(#c6ba9d 0%, #c5b99c 20%, #c1b69a 30%, #bcb297 40%, #b6ad93 50%, #aea48b 60%, #a59c84 70%, #9c937e 80%, #918976 90%, #8d8572 100%)
-        center bottom / 100% var(--art-h) no-repeat,
-        #c8b99a;
+      background: #c8b99a;
     }
 
     body {
@@ -40,24 +27,38 @@
       align-items: center;
     }
 
-    /* Wall drawn by script: the gradient above plus grain copied from the image */
-    .wall {
+    /* Background frame: pinned to the visible screen with insets rather than viewport units,
+       which phones recalculate unreliably when rotating */
+    .stage {
+      --art-h: min(100%, 201.84vw);
       position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+      /* Wall gradient sampled from the image's edges; the script adds matching grain on top */
+      background:
+        linear-gradient(#c6ba9d 0%, #c5b99c 20%, #c1b69a 30%, #bcb297 40%, #b6ad93 50%, #aea48b 60%, #a59c84 70%, #9c937e 80%, #918976 90%, #8d8572 100%)
+        center bottom / 100% var(--art-h) no-repeat,
+        #c8b99a;
+    }
+
+    .wall {
+      position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      z-index: -2;
-      pointer-events: none;
     }
 
+    /* Full height of the screen; on narrow screens capped at 1.5× the width (image is 1600×2153),
+       so only plain wall is cropped from the sides and the arm stays fully in view */
     .art {
-      position: fixed;
+      position: absolute;
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
       height: var(--art-h);
       width: auto;
-      z-index: -1;
       pointer-events: none;
       user-select: none;
       -webkit-mask-image:
@@ -151,6 +152,25 @@
       fill: currentColor;
     }
 
+    /* Landscape phones: arm on the left, form on the right, so the form doesn't cover the arm */
+    @media (orientation: landscape) and (max-height: 540px) {
+      body {
+        justify-content: center;
+        align-items: flex-end;
+      }
+
+      .art { left: 30%; }
+
+      .bar {
+        width: 50%;
+        max-width: 380px;
+        margin-right: max(16px, calc(25vw - 190px));
+        padding-bottom: 0;
+      }
+
+      .age, .status, .socials a { color: #2c2519; }
+    }
+
     .visually-hidden {
       position: absolute;
       width: 1px;
@@ -161,8 +181,10 @@
   </style>
 </head>
 <body>
-  <canvas class="wall" aria-hidden="true"></canvas>
-  <img class="art" src="assets/bg.jpg" srcset="assets/bg.jpg 1600w, assets/bg-2400.jpg 2400w" sizes="min(74.3vh, 150vw)" alt="" aria-hidden="true">
+  <div class="stage" aria-hidden="true">
+    <canvas class="wall"></canvas>
+    <img class="art" src="assets/bg.jpg" srcset="assets/bg.jpg 1600w, assets/bg-2400.jpg 2400w" sizes="min(74.3vh, 150vw)" alt="">
+  </div>
   <div class="bar">
     <form class="signup" id="signup">
       <label for="email" class="visually-hidden">Email address</label>
@@ -193,6 +215,7 @@
       // Plain wall above and right of the can, as fractions of the image (clear of the arm)
       const PATCH = { x: 0.64, y: 0.03, w: 0.32, h: 0.28 };
 
+      const stage = document.querySelector('.stage');
       const art = document.querySelector('.art');
       const canvas = document.querySelector('.wall');
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -240,13 +263,14 @@
       function paint() {
         if (!source.complete || !source.naturalWidth) return;
         const dpr = window.devicePixelRatio || 1;
-        const w = Math.round(innerWidth * dpr);
-        const h = Math.round(innerHeight * dpr);
+        const w = Math.round(stage.clientWidth * dpr);
+        const h = Math.round(stage.clientHeight * dpr);
         canvas.width = w;
         canvas.height = h;
 
         const rect = art.getBoundingClientRect();
-        const gradient = ctx.createLinearGradient(0, rect.top * dpr, 0, rect.bottom * dpr);
+        const top = rect.top - stage.getBoundingClientRect().top;
+        const gradient = ctx.createLinearGradient(0, top * dpr, 0, (top + rect.height) * dpr);
         STOPS.forEach(([at, colour]) => gradient.addColorStop(at, colour));
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, w, h);
@@ -273,10 +297,13 @@
         else paint();
       }
 
+      // Redraw once the frame has actually changed size (rotation, toolbars, window resize);
+      // a plain resize event can fire before a phone has finished rotating
       let timer;
+      const schedule = () => { clearTimeout(timer); timer = setTimeout(sync, 100); };
       source.addEventListener('load', paint);
       art.addEventListener('load', sync);
-      addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(sync, 150); });
+      new ResizeObserver(schedule).observe(stage);
       if (art.complete) sync();
     })();
 
