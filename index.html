@@ -44,16 +44,18 @@
       overflow: hidden;
       z-index: -1;
       pointer-events: none;
-      /* Wall colours. "chalk" (from the mockup) is in use; "sunset" is the orange/yellow gradient;
-         "stone" is the lighting sampled from the original artwork. Swap the var() below to change
-         it, or preview with ?wall=chalk / ?wall=sunset / ?wall=stone.
+      /* Wall colours. "mist" (neutral off-white) is in use; "chalk" is the warmer off-white;
+         "sunset" is the orange/yellow gradient; "stone" is the lighting sampled from the original
+         artwork. Swap the var() below to change it, or preview with ?wall=mist / chalk / sunset / stone.
          Sunset's first colour is 65% opaque, so it sits over white, as it would in a design tool. */
+      --wall-mist: linear-gradient(#f1f1f1 0%, #f7f7f7 23%, #fbfbfb 37%, #fdfdfd 52%, #fdfdfd 65%, #f7f7f7 80%, #f2f2f2 89%, #eaeaea 100%) #fbfbfb;
       --wall-chalk: linear-gradient(#edebe8 0%, #ebebe8 50%, #e9e9de 73%, #e6e1d2 94%, #e4ddcf 100%) #ebebe8;
       --wall-sunset: linear-gradient(311deg, #fff58da6, #f3c17f) #fff;
       --wall-stone: linear-gradient(#c6ba9d 0%, #c5b99c 20%, #c1b69a 30%, #bcb297 40%, #b6ad93 50%, #aea48b 60%, #a59c84 70%, #9c937e 80%, #918976 90%, #8d8572 100%) #c8b99a;
-      background: var(--wall-chalk);
+      background: var(--wall-mist);
     }
 
+    :root[data-wall="mist"] .stage { background: var(--wall-mist); }
     :root[data-wall="chalk"] .stage { background: var(--wall-chalk); }
     :root[data-wall="stone"] .stage { background: var(--wall-stone); }
     :root[data-wall="sunset"] .stage { background: var(--wall-sunset); }
@@ -75,32 +77,33 @@
       overflow: visible;
     }
 
-    /* Multiply with a cool grey, faded to 47%, gives the mockup's soft grey shadow (~#9b9e9a),
-       picking up the wall's warmth where it changes. Only the arm is faded, not the logo. */
+    /* Multiply with a cool grey, faded to 46%, gives the mockup's soft grey shadow (~#a6aaab),
+       picking up any tint in the wall. Only the arm is faded, not the logo. */
     .arm {
       fill: #414c4f;
       mix-blend-mode: multiply;
-      opacity: 0.47;
+      opacity: 0.46;
     }
 
     .logo { fill: #fff; }
 
+    /* Vertical, reading downwards along the left edge */
     .headline {
       position: fixed;
-      top: calc(36px + env(safe-area-inset-top));
-      left: 0;
-      right: 0;
+      /* 38px from the corner on desktop, closer on narrow phones */
+      top: calc(min(38px, 5vw) + env(safe-area-inset-top));
+      left: calc(min(38px, 5vw) + env(safe-area-inset-left));
       margin: 0;
+      writing-mode: vertical-rl;
       font-weight: 800;
-      /* Sized from the screen height, like the arm, so the two stay in proportion (32px at ~950px tall) */
-      font-size: clamp(1.125rem, min(3.4svh, 6.5vw), 2.25rem);
+      /* Sized from the screen height, like the arm, so the two stay in proportion (66px at ~1130px
+         tall); on narrow phones capped by the width so it stays clear of the hand */
+      font-size: clamp(1.5rem, min(5.8svh, 9vw), 5rem);
       line-height: 1;
-      letter-spacing: 0.5em;
-      /* Letter spacing also trails the last letter; matching padding on the left keeps it centred */
-      padding-left: 0.5em;
-      text-align: center;
+      letter-spacing: -0.065em;
       text-transform: uppercase;
-      color: #aeacaa;
+      white-space: nowrap;
+      color: #4e4e4e;
       pointer-events: none;
     }
 
@@ -132,9 +135,8 @@
 
     .signup {
       display: flex;
-      background: #fff;
-      border-radius: 4px;
-      overflow: hidden;
+      align-items: stretch;
+      gap: 14px;
     }
 
     .signup input[type="email"] {
@@ -142,7 +144,8 @@
       min-width: 0;
       padding: 14px 18px;
       border: 0;
-      background: transparent;
+      border-radius: 2px;
+      background: #fff;
       font: inherit;
       font-size: 16px;
       color: inherit;
@@ -150,18 +153,75 @@
     }
 
     .signup input[type="email"]::placeholder {
-      color: #75756f;
+      color: #70706e;
     }
 
-    .signup button {
-      padding: 14px 20px;
+    /* Skewed button with a hard offset shadow; on hover the shadow grows and turns red and the
+       chevrons spread out and pulse (after codepen.io/folaad/pen/YvmRpz) */
+    .cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px 0 20px;
       border: 0;
-      background: #c62525;
+      border-radius: 2px;
+      background: #000;
       color: #fff;
       font: inherit;
       font-size: 14px;
-      cursor: pointer;
       white-space: nowrap;
+      cursor: pointer;
+      transform: skewX(-12deg);
+      box-shadow: 4px 4px 0 #a6aaab;
+      transition: box-shadow 0.6s, transform 0.15s;
+    }
+
+    /* Undo the skew on the contents so the text and arrows stand upright */
+    .cta > span { transform: skewX(12deg); }
+
+    .cta svg {
+      display: block;
+      width: 20px;
+      height: 13px;
+      overflow: visible;
+    }
+
+    .cta path { fill: #fff; transition: transform 0.45s; }
+    .cta .one { transform: translateX(-60%); }
+    .cta .two { transform: translateX(-30%); }
+
+    .cta:hover, .cta:focus-visible {
+      outline: none;
+      box-shadow: 7px 7px 0 #c62525;
+      transition: box-shadow 0.3s, transform 0.15s;
+    }
+
+    .cta:hover .one, .cta:focus-visible .one { transform: translateX(0); animation: chevron 1s infinite 0.6s; }
+    .cta:hover .two, .cta:focus-visible .two { transform: translateX(0); animation: chevron 1s infinite 0.4s; }
+    .cta:hover .three, .cta:focus-visible .three { animation: chevron 1s infinite 0.2s; }
+
+    /* Pressed: the button sinks into its shadow (the only feedback on touch screens) */
+    .cta:active {
+      transform: skewX(-12deg) translate(4px, 4px);
+      box-shadow: 0 0 0 #c62525;
+      transition: box-shadow 0.08s, transform 0.08s;
+    }
+
+    .cta:disabled { opacity: 0.6; cursor: wait; }
+
+    @keyframes chevron {
+      50% { fill: #c62525; }
+    }
+
+    /* Very narrow phones: tighter button so the email field keeps room to type */
+    @media (max-width: 360px) {
+      .signup { gap: 10px; }
+      .cta { padding: 0 12px 0 14px; gap: 8px; font-size: 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cta, .cta path { transition: none; }
+      .cta path { animation: none !important; }
     }
 
     .age {
@@ -203,7 +263,7 @@
     }
 
     /* Landscape phones: too short to show the whole arm with the heading and form, so enlarge the
-       arm and crop its lower part, and tuck the heading closer to the top. The can sits ~21.5% down the
+       arm and crop its lower part, and tuck the heading into the corner. The can sits ~21.5% down the
        artboard; at 150% of the screen height and shifted up 10.25%, the top of the can lands 22%
        from the top of the screen, below the heading, with the logo clear of the form */
     @media (orientation: landscape) and (max-height: 540px) {
@@ -214,8 +274,8 @@
       }
 
       .headline {
-        top: calc(14px + env(safe-area-inset-top));
-        font-size: clamp(1rem, 6svh, 1.5rem);
+        top: calc(16px + env(safe-area-inset-top));
+        left: calc(16px + env(safe-area-inset-left));
       }
 
       .bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
@@ -270,7 +330,16 @@
     <form class="signup" id="signup">
       <label for="email" class="visually-hidden">Email address</label>
       <input type="email" id="email" name="email" placeholder="Your email" required autocomplete="email">
-      <button type="submit">Tap in with us</button>
+      <button type="submit" class="cta">
+        <span>Tap in with us</span>
+        <span aria-hidden="true">
+          <svg viewBox="0 0 66 43">
+            <path class="one" d="M40.15 3.89 43.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L44.68 42.86a.5.5 0 0 1-.7 0l-3.82-3.75a.5.5 0 0 1 0-.71l16.84-16.54a.5.5 0 0 0 0-.71L40.15 4.61a.5.5 0 0 1 0-.72Z"/>
+            <path class="two" d="M20.15 3.89 23.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L24.68 42.86a.5.5 0 0 1-.7 0l-3.82-3.75a.5.5 0 0 1 0-.71l16.84-16.54a.5.5 0 0 0 0-.71L20.15 4.61a.5.5 0 0 1 0-.72Z"/>
+            <path class="three" d="M.15 3.89 3.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L4.68 42.86a.5.5 0 0 1-.7 0L.15 39.11a.5.5 0 0 1 0-.71L17 21.86a.5.5 0 0 0 0-.71L.15 4.61a.5.5 0 0 1 0-.72Z"/>
+          </svg>
+        </span>
+      </button>
     </form>
     <label class="age"><input type="checkbox" form="signup" name="age" required> I'm 18 or over</label>
     <p class="status" id="status" role="status" aria-live="polite"></p>
