@@ -6,7 +6,7 @@
   <title>DatSlaps</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">
   <meta property="og:image" content="https://www.datslaps.co.uk/assets/bg.jpg">
   <style>
     html, body {
@@ -23,7 +23,8 @@
       min-height: 100vh;
       /* Visible height with the phone browser's toolbars showing, so the form is in frame on landing */
       min-height: 100svh;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 400;
       color: #2c2519;
       display: flex;
       flex-direction: column;
@@ -86,19 +87,20 @@
 
     .headline {
       position: fixed;
-      top: calc(40px + env(safe-area-inset-top));
+      top: calc(36px + env(safe-area-inset-top));
       left: 0;
       right: 0;
       margin: 0;
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
       font-weight: 800;
-      /* Sized from the screen height, like the arm, so the two stay in proportion */
-      font-size: clamp(2.5rem, min(8svh, 13vw), 6rem);
-      line-height: 0.88;
-      letter-spacing: -0.045em;
+      /* Sized from the screen height, like the arm, so the two stay in proportion (32px at ~950px tall) */
+      font-size: clamp(1.125rem, min(3.4svh, 6.5vw), 2.25rem);
+      line-height: 1;
+      letter-spacing: 0.5em;
+      /* Letter spacing also trails the last letter; matching padding on the left keeps it centred */
+      padding-left: 0.5em;
       text-align: center;
       text-transform: uppercase;
-      color: #fff;
+      color: #aeacaa;
       pointer-events: none;
     }
 
@@ -130,8 +132,8 @@
 
     .signup {
       display: flex;
-      background: #c8b99a;
-      border-radius: 999px;
+      background: #fff;
+      border-radius: 4px;
       overflow: hidden;
     }
 
@@ -148,13 +150,13 @@
     }
 
     .signup input[type="email"]::placeholder {
-      color: rgba(44, 37, 25, 0.65);
+      color: #75756f;
     }
 
     .signup button {
       padding: 14px 20px;
       border: 0;
-      background: #2c2519;
+      background: #c62525;
       color: #fff;
       font: inherit;
       font-size: 14px;
@@ -201,7 +203,7 @@
     }
 
     /* Landscape phones: too short to show the whole arm with the heading and form, so enlarge the
-       arm and crop its lower part, and put the heading on one line. The can sits ~21.5% down the
+       arm and crop its lower part, and tuck the heading closer to the top. The can sits ~21.5% down the
        artboard; at 150% of the screen height and shifted up 10.25%, the top of the can lands 22%
        from the top of the screen, below the heading, with the logo clear of the form */
     @media (orientation: landscape) and (max-height: 540px) {
@@ -212,11 +214,9 @@
       }
 
       .headline {
-        top: calc(12px + env(safe-area-inset-top));
-        font-size: clamp(1.5rem, 9svh, 2.5rem);
+        top: calc(14px + env(safe-area-inset-top));
+        font-size: clamp(1rem, 6svh, 1.5rem);
       }
-
-      .headline br { display: none; }
 
       .bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
       .socials { margin-top: 6px; }
@@ -265,7 +265,7 @@
     </svg>
     <div class="grain"></div>
   </div>
-  <h1 class="headline">Coming <br>soon</h1>
+  <h1 class="headline">Coming soon</h1>
   <div class="bar">
     <form class="signup" id="signup">
       <label for="email" class="visually-hidden">Email address</label>
