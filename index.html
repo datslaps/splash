@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DatSlaps</title>
+  <meta name="theme-color" content="#f1f1f1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">
@@ -15,8 +16,9 @@
       height: 100%;
     }
 
+    /* Matches the wall, since phones paint this colour beside the notch in landscape */
     html {
-      background: #c8b99a;
+      background: #f7f7f7;
     }
 
     body {
@@ -139,21 +141,24 @@
       gap: 14px;
     }
 
+    /* Transparent field with a thick underline */
     .signup input[type="email"] {
       flex: 1;
       min-width: 0;
-      padding: 14px 18px;
+      padding: 10px 2px 6px;
       border: 0;
-      border-radius: 2px;
-      background: #fff;
+      border-bottom: 3px solid #000;
+      border-radius: 0;
+      background: transparent;
       font: inherit;
-      font-size: 16px;
-      color: inherit;
+      font-size: 22px;
+      color: #000;
       outline: none;
     }
 
     .signup input[type="email"]::placeholder {
-      color: #70706e;
+      color: #000;
+      opacity: 1;
     }
 
     /* Skewed button with a hard offset shadow; on hover the shadow grows and turns red and the
@@ -162,13 +167,15 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 0 18px 0 20px;
+      padding: 12px 20px 12px 24px;
       border: 0;
       border-radius: 2px;
       background: #000;
       color: #fff;
       font: inherit;
-      font-size: 14px;
+      font-weight: 800;
+      font-size: 20px;
+      text-transform: uppercase;
       white-space: nowrap;
       cursor: pointer;
       transform: skewX(-12deg);
@@ -181,8 +188,8 @@
 
     .cta svg {
       display: block;
-      width: 20px;
-      height: 13px;
+      width: 22px;
+      height: 14px;
       overflow: visible;
     }
 
@@ -213,11 +220,6 @@
       50% { fill: #c62525; }
     }
 
-    /* Very narrow phones: tighter button so the email field keeps room to type */
-    @media (max-width: 360px) {
-      .signup { gap: 10px; }
-      .cta { padding: 0 12px 0 14px; gap: 8px; font-size: 13px; }
-    }
 
     @media (prefers-reduced-motion: reduce) {
       .cta, .cta path { transition: none; }
@@ -262,6 +264,28 @@
       fill: currentColor;
     }
 
+    /* Portrait phones: email field full width with the button centred below, and smaller icons */
+    @media (max-width: 520px) {
+      .signup {
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .signup input[type="email"] {
+        width: 100%;
+        text-align: center;
+      }
+
+      .socials a,
+      .socials svg {
+        width: 34px;
+        height: 34px;
+      }
+
+      .socials { gap: 18px; }
+    }
+
     /* Landscape phones: too short to show the whole arm with the heading and form, so enlarge the
        arm and crop its lower part, and tuck the heading into the corner. The can sits ~21.5% down the
        artboard; at 150% of the screen height and shifted up 10.25%, the top of the can lands 22%
@@ -279,7 +303,13 @@
       }
 
       .bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-      .socials { margin-top: 6px; }
+      .socials { margin-top: 6px; gap: 18px; }
+
+      .socials a,
+      .socials svg {
+        width: 34px;
+        height: 34px;
+      }
     }
 
     .visually-hidden {
@@ -329,9 +359,9 @@
   <div class="bar">
     <form class="signup" id="signup">
       <label for="email" class="visually-hidden">Email address</label>
-      <input type="email" id="email" name="email" placeholder="Your email" required autocomplete="email">
+      <input type="email" id="email" name="email" placeholder="[Your email]" required autocomplete="email">
       <button type="submit" class="cta">
-        <span>Tap in with us</span>
+        <span>Lock in</span>
         <span aria-hidden="true">
           <svg viewBox="0 0 66 43">
             <path class="one" d="M40.15 3.89 43.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L44.68 42.86a.5.5 0 0 1-.7 0l-3.82-3.75a.5.5 0 0 1 0-.71l16.84-16.54a.5.5 0 0 0 0-.71L40.15 4.61a.5.5 0 0 1 0-.72Z"/>
