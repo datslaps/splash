@@ -108,45 +108,12 @@
       text-align: center;
     }
 
-    /* RSVP link to the Partiful event: skewed black button with a hard offset shadow that turns
-       white on hover and presses in when tapped */
-    .rsvp {
-      display: inline-block;
-      padding: 12px 28px;
-      background: #000;
-      color: #fff;
-      font-weight: 800;
-      font-size: 20px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transform: skewX(-12deg);
-      box-shadow: 4px 4px 0 #7d0f13;
-      transition: box-shadow 0.3s, transform 0.15s;
-    }
-
-    .rsvp span { display: inline-block; transform: skewX(12deg); }
-
-    .rsvp:hover, .rsvp:focus-visible {
-      outline: none;
-      box-shadow: 7px 7px 0 #fff;
-    }
-
-    .rsvp:active {
-      transform: skewX(-12deg) translate(4px, 4px);
-      box-shadow: 0 0 0 #fff;
-      transition: box-shadow 0.08s, transform 0.08s;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .rsvp { transition: none; }
-    }
-
     .socials {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 12px;
-      margin-top: 22px;
+      margin-top: 14px;
     }
 
     .socials a {
@@ -164,8 +131,26 @@
       fill: currentColor;
     }
 
-    /* Portrait phones: smaller icons */
+    /* RSVP text link to the Partiful event, sitting in the row with the icons */
+    .socials a.rsvp {
+      width: auto;
+      height: auto;
+      padding: 8px 4px;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+
+    .socials a.rsvp:hover { text-decoration-thickness: 3px; }
+
+    /* Portrait phones: smaller icons and link */
     @media (max-width: 520px) {
+      .socials a.rsvp { font-size: 16px; }
+
       .socials a,
       .socials svg {
         width: 34px;
@@ -175,8 +160,10 @@
       .socials { gap: 18px; }
     }
 
-    /* Landscape phones: tighten spacing and shrink the icons */
+    /* Landscape phones: tighten spacing and shrink the icons and link */
     @media (orientation: landscape) and (max-height: 540px) {
+      .socials a.rsvp { font-size: 16px; }
+
       .hero { padding: 12px 16px 8px; }
 
       .bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
@@ -238,8 +225,6 @@
     </svg>
   </main>
   <div class="bar">
-    <a class="rsvp" href="https://partiful.com/e/ooDzOUtCwQLcdJMHV0gq" target="_blank" rel="noopener"><span>RSVP</span></a>
-
     <nav class="socials" aria-label="Social media">
       <a href="https://www.instagram.com/dat.slaps/" target="_blank" rel="noopener" aria-label="Instagram">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-2.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
@@ -247,6 +232,7 @@
       <a href="https://www.tiktok.com/@datslaps" target="_blank" rel="noopener" aria-label="TikTok">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.82A4.278 4.278 0 0 1 13.81 3h-2.77v12.4a2.592 2.592 0 0 1-2.59 2.49c-1.42 0-2.6-1.16-2.6-2.59 0-1.72 1.66-3.01 3.37-2.48V9.96c-3.45-.46-6.47 2.22-6.47 5.64 0 3.07 2.53 5.59 5.7 5.4 3.36-.2 5.02-2.63 5.02-5.3V9.41a7.382 7.382 0 0 0 4.34 1.4V8.04c-.002 0-1.88-.18-3.31-2.22z"/></svg>
       </a>
+      <a class="rsvp" href="https://partiful.com/e/ooDzOUtCwQLcdJMHV0gq" target="_blank" rel="noopener">RSVP</a>
     </nav>
   </div>
 
