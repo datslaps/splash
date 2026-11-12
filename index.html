@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DatSlaps</title>
   <meta name="theme-color" content="#c9191f">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">
   <meta property="og:image" content="https://www.datslaps.co.uk/assets/bg.jpg">
   <style>
     html, body {
@@ -111,113 +108,6 @@
       text-align: center;
     }
 
-    .signup {
-      display: flex;
-      align-items: stretch;
-      gap: 14px;
-    }
-
-    /* Transparent field with a thick underline */
-    .signup input[type="email"] {
-      flex: 1;
-      min-width: 0;
-      padding: 10px 2px 6px;
-      border: 0;
-      border-bottom: 3px solid #000;
-      border-radius: 0;
-      background: transparent;
-      font: inherit;
-      font-size: 22px;
-      color: #000;
-      outline: none;
-    }
-
-    .signup input[type="email"]::placeholder {
-      color: #000;
-      opacity: 1;
-    }
-
-    /* Skewed button with a hard offset shadow; on hover the shadow grows and turns white and the
-       chevrons spread out and pulse (after codepen.io/folaad/pen/YvmRpz) */
-    .cta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 20px 12px 24px;
-      border: 0;
-      border-radius: 2px;
-      background: #000;
-      color: #fff;
-      font: inherit;
-      font-weight: 800;
-      font-size: 20px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      cursor: pointer;
-      transform: skewX(-12deg);
-      box-shadow: 4px 4px 0 #7d0f13;
-      transition: box-shadow 0.6s, transform 0.15s;
-    }
-
-    /* Undo the skew on the contents so the text and arrows stand upright */
-    .cta > span { transform: skewX(12deg); }
-
-    .cta svg {
-      display: block;
-      width: 22px;
-      height: 14px;
-      overflow: visible;
-    }
-
-    .cta path { fill: #fff; transition: transform 0.45s; }
-    .cta .one { transform: translateX(-60%); }
-    .cta .two { transform: translateX(-30%); }
-
-    .cta:hover, .cta:focus-visible {
-      outline: none;
-      box-shadow: 7px 7px 0 #fff;
-      transition: box-shadow 0.3s, transform 0.15s;
-    }
-
-    .cta:hover .one, .cta:focus-visible .one { transform: translateX(0); animation: chevron 1s infinite 0.6s; }
-    .cta:hover .two, .cta:focus-visible .two { transform: translateX(0); animation: chevron 1s infinite 0.4s; }
-    .cta:hover .three, .cta:focus-visible .three { animation: chevron 1s infinite 0.2s; }
-
-    /* Pressed: the button sinks into its shadow (the only feedback on touch screens) */
-    .cta:active {
-      transform: skewX(-12deg) translate(4px, 4px);
-      box-shadow: 0 0 0 #fff;
-      transition: box-shadow 0.08s, transform 0.08s;
-    }
-
-    .cta:disabled { opacity: 0.6; cursor: wait; }
-
-    @keyframes chevron {
-      50% { fill: #c62525; }
-    }
-
-
-    @media (prefers-reduced-motion: reduce) {
-      .cta, .cta path { transition: none; }
-      .cta path { animation: none !important; }
-    }
-
-    .age {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      margin-top: 10px;
-      font-size: 12px;
-      color: #fff;
-    }
-
-    .status {
-      min-height: 1.2em;
-      margin: 8px 0 0;
-      font-size: 13px;
-      color: #fff;
-    }
-
     .socials {
       display: flex;
       justify-content: center;
@@ -240,19 +130,8 @@
       fill: currentColor;
     }
 
-    /* Portrait phones: email field full width with the button centred below, and smaller icons */
+    /* Portrait phones: smaller icons */
     @media (max-width: 520px) {
-      .signup {
-        flex-direction: column;
-        align-items: center;
-        gap: 18px;
-      }
-
-      .signup input[type="email"] {
-        width: 100%;
-        text-align: center;
-      }
-
       .socials a,
       .socials svg {
         width: 34px;
@@ -325,23 +204,6 @@
     </svg>
   </main>
   <div class="bar">
-    <form class="signup" id="signup">
-      <label for="email" class="visually-hidden">Email address</label>
-      <input type="email" id="email" name="email" placeholder="[Your email]" required autocomplete="email">
-      <button type="submit" class="cta">
-        <span>Lock in</span>
-        <span aria-hidden="true">
-          <svg viewBox="0 0 66 43">
-            <path class="one" d="M40.15 3.89 43.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L44.68 42.86a.5.5 0 0 1-.7 0l-3.82-3.75a.5.5 0 0 1 0-.71l16.84-16.54a.5.5 0 0 0 0-.71L40.15 4.61a.5.5 0 0 1 0-.72Z"/>
-            <path class="two" d="M20.15 3.89 23.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L24.68 42.86a.5.5 0 0 1-.7 0l-3.82-3.75a.5.5 0 0 1 0-.71l16.84-16.54a.5.5 0 0 0 0-.71L20.15 4.61a.5.5 0 0 1 0-.72Z"/>
-            <path class="three" d="M.15 3.89 3.98.14a.5.5 0 0 1 .7 0l21.01 20.65a1 1 0 0 1 0 1.43L4.68 42.86a.5.5 0 0 1-.7 0L.15 39.11a.5.5 0 0 1 0-.71L17 21.86a.5.5 0 0 0 0-.71L.15 4.61a.5.5 0 0 1 0-.72Z"/>
-          </svg>
-        </span>
-      </button>
-    </form>
-    <label class="age"><input type="checkbox" form="signup" name="age" required> I'm 18 or over</label>
-    <p class="status" id="status" role="status" aria-live="polite"></p>
-
     <nav class="socials" aria-label="Social media">
       <a href="https://www.instagram.com/dat.slaps/" target="_blank" rel="noopener" aria-label="Instagram">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-2.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
@@ -441,53 +303,6 @@
       }
       requestAnimationFrame(frame);
     })();
-
-    // Klaviyo public key and list ID are safe to publish: they only allow subscribing.
-    const KLAVIYO_PUBLIC_KEY = 'XFG94h';
-    const KLAVIYO_LIST_ID = 'YeFbmS';
-
-    const form = document.getElementById('signup');
-    const status = document.getElementById('status');
-    const button = form.querySelector('button');
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      button.disabled = true;
-      status.textContent = '';
-
-      try {
-        const res = await fetch(`https://a.klaviyo.com/client/subscriptions/?company_id=${KLAVIYO_PUBLIC_KEY}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/vnd.api+json', revision: '2024-10-15' },
-          body: JSON.stringify({
-            data: {
-              type: 'subscription',
-              attributes: {
-                custom_source: 'Coming soon page',
-                profile: {
-                  data: {
-                    type: 'profile',
-                    attributes: {
-                      email: form.email.value.trim(),
-                      properties: { age_confirmed_18: true }
-                    }
-                  }
-                }
-              },
-              relationships: { list: { data: { type: 'list', id: KLAVIYO_LIST_ID } } }
-            }
-          })
-        });
-        if (!res.ok) throw new Error(res.status);
-        form.reset();
-        document.querySelector('.age input').checked = false;
-        status.textContent = 'Thanks! Check your inbox to confirm.';
-      } catch {
-        status.textContent = 'Something went wrong. Please try again.';
-      } finally {
-        button.disabled = false;
-      }
-    });
   </script>
 </body>
 </html>
